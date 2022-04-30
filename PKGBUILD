@@ -20,9 +20,9 @@
 # Contributor: jospehgbr <rafael.f.f1@gmail.com>
 # Maintainer: Adam <adam900710@gmail.com>
 
-_pkgname=libass
+_relname=libass
 
-pkgname=lib32-${_pkgname}
+pkgname=lib32-${_relname}
 pkgver=0.15.2
 pkgrel=1
 pkgdesc="A portable library for SSA/ASS subtitles rendering (32 bit)"
@@ -30,15 +30,16 @@ arch=("x86_64")
 url="https://github.com/libass/libass/"
 license=("BSD")
 depends=(
-  "${_pkgname}"
-  "lib32-fontconfig"
+  "${_relname}"
+  "lib32-freetype2"
   "lib32-fribidi"
+  "lib32-fontconfig"
   "lib32-glib2"
   "lib32-glibc"
-  "libfreetype.so"
+  "lib32-harfbuzz"
 )
 makedepends=(
-  "gcc-multilib"
+  "git"
   "nasm"
 )
 provides=(
@@ -52,7 +53,7 @@ sha512sums=(
 )
 
 build() {
-  cd "${_pkgname}-${pkgver}"
+  cd "${_relname}-${pkgver}"
   export PKG_CONFIG_PATH="/usr/lib32/pkgconfig"
   export CC="gcc -m32"
 
@@ -62,14 +63,17 @@ build() {
     --host=i686-linux-gnu \
     --enable-harfbuzz \
     --enable-fontconfig
+
   make
 }
 
 package() {
-  cd "${_pkgname}-${pkgver}"
+  cd "${_relname}-${pkgver}"
 
   make DESTDIR="${pkgdir}" install
+
   install -Dm 644 COPYING -t "${pkgdir}"/usr/share/licenses/${pkgname}/
+  
   rm -rf "${pkgdir}"/usr/include
 }
 
